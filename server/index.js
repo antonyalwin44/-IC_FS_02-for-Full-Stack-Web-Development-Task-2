@@ -32,6 +32,20 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     success: true, 
     message: 'Certificate Management System API is running',
+    timestamp: new Date().toISOString(),
+    env: {
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      nodeEnv: process.env.NODE_ENV
+    }
+  });
+});
+
+// Test route
+app.get('/api/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API is working!',
     timestamp: new Date().toISOString()
   });
 });
