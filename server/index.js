@@ -6,10 +6,12 @@ const connectDB = require('./config/database');
 // Load environment variables
 dotenv.config();
 
-// Connect to database
-connectDB();
-
 const app = express();
+
+// Connect to database (non-blocking for serverless)
+connectDB().catch(err => {
+  console.error('Failed to connect to MongoDB:', err.message);
+});
 
 // Middleware
 app.use(cors({
