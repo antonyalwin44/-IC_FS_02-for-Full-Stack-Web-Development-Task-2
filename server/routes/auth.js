@@ -7,6 +7,9 @@ const emailService = require('../services/emailService');
 
 // Generate JWT Token
 const generateToken = (id) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in environment variables');
+  }
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d'
   });
@@ -67,7 +70,8 @@ router.post('/register', [
     console.error('Registration error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error during registration'
+      message: error.message || 'Server error during registration',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
