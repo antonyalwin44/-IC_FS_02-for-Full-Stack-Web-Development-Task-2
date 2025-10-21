@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f3f4f6;
+        }
+        canvas {
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <h2>Certificate Management System - Favicon</h2>
+    <canvas id="favicon" width="64" height="64"></canvas>
+    <button onclick="downloadFavicon()">Download as favicon.ico</button>
+    
+    <script>
+        const canvas = document.getElementById('favicon');
+        const ctx = canvas.getContext('2d');
+        
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, 64, 64);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        
+        // Draw certificate background
+        ctx.fillStyle = gradient;
+        ctx.roundRect(8, 12, 48, 40, 3);
+        ctx.fill();
+        
+        // Draw certificate lines
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.fillRect(14, 18, 20, 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillRect(14, 24, 36, 1.5);
+        ctx.fillRect(14, 29, 36, 1.5);
+        ctx.fillRect(14, 34, 28, 1.5);
+        
+        // Draw award ribbon
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(48, 44, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw ribbon tails
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.moveTo(48, 52);
+        ctx.lineTo(44, 60);
+        ctx.lineTo(48, 57);
+        ctx.lineTo(52, 60);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw star
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+            const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+            const x = 48 + Math.cos(angle) * 4;
+            const y = 44 + Math.sin(angle) * 4;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        
+        // Polyfill for roundRect if not available
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                this.closePath();
+            };
+        }
+        
+        function downloadFavicon() {
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'favicon.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('Downloaded as favicon.png! You can convert it to .ico using an online converter like favicon.io');
+            });
+        }
+    </script>
+</body>
+</html>
