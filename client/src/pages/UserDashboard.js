@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Award, Download, Calendar, Mail, Search } from 'lucide-react';
 import { certificateAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -12,15 +12,7 @@ const UserDashboard = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const { user } = useAuth();
 
-  useEffect(() => {
-    loadCertificates();
-  }, []);
-
-  useEffect(() => {
-    filterCertificates();
-  }, [searchTerm, certificates]);
-
-  const loadCertificates = async () => {
+  const loadCertificates = useCallback(async () => {
     setLoading(true);
     try {
       const response = await certificateAPI.getMy();
@@ -32,9 +24,9 @@ const UserDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filterCertificates = () => {
+  const filterCertificates = useCallback(() => {
     if (!searchTerm) {
       setFilteredCertificates(certificates);
       return;
@@ -45,7 +37,15 @@ const UserDashboard = () => {
       cert.courseName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCertificates(filtered);
-  };
+  }, [searchTerm, certificates]);
+
+  useEffect(() => {
+    loadCertificates();
+  }, [loadCertificates]);
+
+  useEffect(() => {
+    filterCertificates();
+  }, [filterCertificates]);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });

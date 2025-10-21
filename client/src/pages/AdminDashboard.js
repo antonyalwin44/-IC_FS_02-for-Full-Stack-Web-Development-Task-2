@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Award, 
   FileText, 
@@ -7,7 +7,6 @@ import {
   Plus,
   Download,
   Trash2,
-  Eye,
   TrendingUp
 } from 'lucide-react';
 import { certificateAPI, templateAPI, analyticsAPI } from '../services/api';
@@ -25,11 +24,7 @@ const AdminDashboard = () => {
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  useEffect(() => {
-    loadData();
-  }, [activeTab]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'overview') {
@@ -48,7 +43,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
